@@ -22,6 +22,10 @@ def exit_button_callback(event, x, y, flags, param):
         if 540 <= x <= 640 and 0 <= y <= 40:
             exit_clicked = True
 
+# ฟังก์ชันสำหรับแสดงข้อความบนภาพ
+def show_text(image, text, x, y):
+    cv2.putText(image, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+
 # กำหนดฟังก์ชันให้กับการคลิกที่ภาพ
 cv2.namedWindow("Output")
 cv2.setMouseCallback("Output", exit_button_callback)
@@ -32,7 +36,7 @@ while cap.isOpened():
     if check:
         gray_img = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # จำแนกใบหน้า
-        face_detect = face_cascade.detectMultiScale(gray_img, 1.2, 5)
+        face_detect = face_cascade.detectMultiScale(gray_img, 1.3, 5)
         # แสดงตำแหน่งที่เจอใบหน้า
         for (x, y, w, h) in face_detect:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), thickness=5)
@@ -55,6 +59,9 @@ while cap.isOpened():
                     # ใส่กรอบสีแดงสำหรับบุคคลที่ไม่รู้จัก
                     cv2.putText(frame, "Unknown", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), thickness=5)
+        # แสดงข้อความเมื่อไม่พบใบหน้า
+        if len(face_detect) == 0:
+            show_text(frame, "No face detected", 10, 30)
 
         # เพิ่มปุ่ม Exit ที่มุมขวาบน
         exit_text = "Exit"

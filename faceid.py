@@ -7,6 +7,7 @@ cap = cv2.VideoCapture(0)
 # อ่านไฟล์สำหรับการจำแนกใบหน้า
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye_tree_eyeglasses.xml")
+
 # ตั้งค่าตัวแปรสำหรับปุ่ม Exit
 exit_clicked = False
 
@@ -35,6 +36,12 @@ while cap.isOpened():
         # แสดงตำแหน่งที่เจอใบหน้า
         for (x, y, w, h) in face_detect:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), thickness=5)
+            # ตรวจจับตาในใบหน้า
+            roi_gray = gray_img[y:y+h, x:x+w]
+            roi_color = frame[y:y+h, x:x+w]
+            eyes = eye_cascade.detectMultiScale(roi_gray)
+            for (ex, ey, ew, eh) in eyes:
+                cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (255, 0, 0), 2)
             # แสดงชื่อใบหน้า (ถ้ามี)
             if face_names:
                 # ตรวจสอบความสอดคล้องระหว่างภาพใบหน้าและชื่อ

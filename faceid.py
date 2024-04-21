@@ -5,8 +5,8 @@ import os
 cap = cv2.VideoCapture(0)
 
 # อ่านไฟล์สำหรับการจำแนกใบหน้า
-face_cascade = cv2.CascadeClassifier("Detect/haarcascade_frontalface_default.xml")
-
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye_tree_eyeglasses.xml")
 # ตั้งค่าตัวแปรสำหรับปุ่ม Exit
 exit_clicked = False
 
@@ -60,14 +60,15 @@ while cap.isOpened():
         cv2.imshow("Output", frame)
 
         # หากปุ่ม "e" ถูกกดหรือคลิกที่ปุ่ม "Exit" ในหน้าต่าง
-        if cv2.waitKey(1) & 0xFF == ord("e") or exit_clicked:
+        key = cv2.waitKey(1)
+        if key == ord("e") or exit_clicked:
             break
         # หากปุ่ม "s" ถูกกด เพื่อเซฟใบหน้าและชื่อ
-        elif cv2.waitKey(1) & 0xFF == ord("s"):
+        elif key == ord("s"):
             name = input("Enter face name: ")  # รับชื่อใบหน้าจากผู้ใช้
             # เซฟใบหน้าและชื่อ
             if name:
-                face_data.append(gray_img[y:y+h, x:x+w])  # เก็บข้อมูลใบหน้า
+                face_data.append(gray_img[y:y+h, x:x+w].copy())  # เก็บข้อมูลใบหน้า
                 face_names.append(name)  # เก็บชื่อใบหน้า
 
     else:
@@ -84,7 +85,7 @@ if face_data:
 
     # เซฟข้อมูลใบหน้าลงในโฟลเดอร์ faces
     for i, face_img in enumerate(face_data):
-        cv2.imwrite(f"faces/{face_names[i]}.jpg", face_img)
+        cv2.imwrite(f"faces/{face_names[i]}_{i}.jpg", face_img)
 
     print("Face data saved successfully.")
 else:
